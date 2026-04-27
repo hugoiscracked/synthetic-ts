@@ -175,7 +175,7 @@ The paper's controlled study plans 4,218 runs across Groups 1–9 (Table 3); the
 ```bibtex
 @article{cazaux2026synthetic,
   title     = {When Does Synthetic Data Help? Empirical Evidence from Deep Learning Time Series Forecasters},
-  author    = {Cazaux, Hugo},
+  author    = {Cazaux, Hugo and {\'A}sgeirsson, Eyj{\'o}lfur Ingi and Stef{\'a}nsson, Hlynur},
   journal   = {arXiv preprint},
   year      = {2026}
 }
