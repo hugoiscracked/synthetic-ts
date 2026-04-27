@@ -1,0 +1,24 @@
+__pycache__/
+*.py[cod]
+*.egg-info/
+dist/
+build/
+.env
+env/
+venv/
+.venv/
+
+# datasets (too large — download from TSLib)
+dataset/
+
+# generated job files (run generate_jobs.sh to recreate)
+jobs/
+
+# training artefacts
+checkpoints/
+logs/
+
+# editor
+.vscode/
+.idea/
+*.swp
