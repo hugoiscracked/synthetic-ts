@@ -2,9 +2,9 @@
 
 This repository contains the code, experiment scripts, and results accompanying the paper:
 
-> **When Does Synthetic Data Help? Empirical Evidence from Deep Learning Time Series Forecasters**  
+> **Does Synthetic Data Help? Empirical Evidence from Deep Learning Time Series Forecasters**  
 > Hugo Cazaux, Eyjólfur Ingi Ásgeirsson, Hlynur Stefánsson
-> Preprint: [arXiv link — to be added]
+> Preprint: https://arxiv.org/abs/2605.06032
 
 ---
 
@@ -176,7 +176,7 @@ The paper's controlled study plans 4,218 runs across Groups 1–9 (Table 3); the
 @article{cazaux2026synthetic,
   title     = {When Does Synthetic Data Help? Empirical Evidence from Deep Learning Time Series Forecasters},
   author    = {Cazaux, Hugo and {\'A}sgeirsson, Eyj{\'o}lfur Ingi and Stef{\'a}nsson, Hlynur},
-  journal   = {arXiv preprint},
+  journal   = {arXiv preprint arXiv:2605.06032},
   year      = {2026}
 }
 ```
