@@ -10,12 +10,13 @@ This repository contains the code, experiment scripts, and results accompanying 
 
 ## Overview
 
-We run **4,218 controlled experiments** across five forecasting architectures, seven benchmark datasets, nine prediction horizons and four synthetic data variables to answer the question: _when_ does adding synthetic time-series data to training help, and when does it hurt?
+We run **5,265 controlled supervised experiments** (thirteen experiment groups, five forecasting architectures, nine benchmark datasets) plus a three-seed foundation-model pre-training ablation to answer the question: _when_ does adding synthetic time-series data to training help, and when does it hurt?
 
 **Key findings:**
-- Architecture is the strongest single predictor: channel-mixing models (TimesNet, iTransformer) benefit consistently; channel-independent models (DLinear, PatchTST) are reliably harmed.
-- The Seasonal-Trend (ST) bundle is the safest choice across all datasets; hard curriculum switches are catastrophic (+24% MSE vs static mixing).
-- In low-resource settings (≤25% real data), a receptive architecture can match or exceed full-data baselines. A cache of 500 pre-generated samples is sufficient and essentially free at inference time.
+- Architecture is the strongest single predictor: in our model pool, channel-mixing models (TimesNet, iTransformer) are markedly more receptive to synthetic augmentation; channel-independent models (DLinear, PatchTST) are reliably harmed.
+- Bundle choice is a matter of generator–target match: Seasonal-Trend (ST) is the right default for seasonal benchmarks, while Weather and Exchange prefer the bundle matching their extreme axis. Hard curriculum switches are harmful (+24% MSE vs static mixing).
+- Low-resource augmentation beats the sparse baseline in only a minority of settings (4/16 TimesNet, 3/16 iTransformer).
+- In pre-training, synthetic data reduces zero-shot MSE on ETT by 30% but is neutral to slightly harmful on 19 held-out GIFT-Eval datasets (pre-registered evaluation).
 
 ---
 
@@ -26,7 +27,7 @@ We run **4,218 controlled experiments** across five forecasting architectures, s
 ├── paper/
 │   └── paper.pdf                  # Full paper (PDF)
 ├── results/
-│   ├── all_results.csv            # All 4,229 runs, combined (with Group column)
+│   ├── all_results.csv            # All 5,276 supervised runs, combined (with Group column)
 │   ├── group1_baseline.csv        # Group 1: real-only baselines
 │   ├── group2_sparsity.csv        # Group 2: data sparsity
 │   ├── group3_augmentation.csv    # Group 3: synthetic augmentation ratio
@@ -35,7 +36,12 @@ We run **4,218 controlled experiments** across five forecasting architectures, s
 │   ├── group6_bundle.csv          # Group 6: bundle type (ST/NR/LM/VE)
 │   ├── group7_curriculum.csv      # Group 7: curriculum / annealing schedule
 │   ├── group8_latent.csv          # Group 8: latent factor cross-channel correlation
-│   └── group9_cacheablation.csv   # Group 9: cache size ablation
+│   ├── group9_cacheablation.csv   # Group 9: cache size ablation
+│   ├── group10_transfer.csv       # Group 10: bundle transfer matrix (synthetic train -> synthetic test)
+│   ├── group11_kernelsynth.csv    # Group 11: external generator (KernelSynth)
+│   ├── group12_flip.csv           # Group 12: Exchange / Illness (opposite statistical character)
+│   ├── group13_budget.csv         # Group 13: training-budget controls (iso-step, epoch sweep)
+│   └── tsfm/                      # Foundation-model pre-training ablation (see results/tsfm/README.md)
 ├── data_provider/
 │   ├── data_loader.py             # Dataset_Synthetic, Dataset_Mixed + standard TSLib loaders
 │   └── data_factory.py            # data_provider() with mixed/anneal/sparsity modes
@@ -79,8 +85,8 @@ All model files (`models/`, `layers/`) and base dataset loaders (`data_provider/
 ## Setup
 
 ```bash
-git clone https://github.com/hugoiscracked/synthetic-tslib
-cd synthetic-tslib
+git clone https://github.com/hugoiscracked/synthetic-ts
+cd synthetic-ts
 pip install -r requirements.txt
 ```
 
@@ -145,12 +151,16 @@ Resume logic is built in: re-running any job skips experiments already present w
 
 ## Results
 
-`results/all_results.csv` contains 4,229 unique successfully completed runs with columns.
-The paper's controlled study plans 4,218 runs across Groups 1–9 (Table 3); the 11 additional runs in Group 9 are preliminary cache-ablation trials included here for completeness.
+`results/all_results.csv` contains 5,276 unique successfully completed supervised runs.
+The paper's controlled study comprises 5,265 runs across Groups 1–13; the 11 additional runs in Group 9 are preliminary cache-ablation trials included here for completeness.
+
+Two groups reuse columns for their own factors:
+- **Group 10** (transfer matrix): training and evaluation are both synthetic; `bundle` is `TRAIN>TEST` (e.g. `ST>LM`, `KS` = KernelSynth), and `dataset` is a placeholder for the window geometry.
+- **Group 13** (training budget): `anneal_strategy` is `iso` (optimiser steps capped at the real-only count) or `ep` (epoch sweep), and `anneal_epoch` is the epoch budget (5, 20, 40; 0 for `iso`).
 
 | Column | Description |
 |---|---|
-| `group` | Experiment group (1–9) |
+| `group` | Experiment group (1–13) |
 | `experiment_group` | Group label string |
 | `model` | Architecture name |
 | `dataset` | Benchmark dataset |
